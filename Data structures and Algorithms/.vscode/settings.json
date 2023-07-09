@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "*.json": "json",
-        "*.ino": "arduino",
-        "typeinfo": "cpp",
-        "iostream": "cpp"
-    },
-}
