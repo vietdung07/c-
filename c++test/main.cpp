@@ -26,11 +26,25 @@
 // 	return 0;
 //}
 #include <iostream>
-#include <cstdio>
-#include "tmp.h"
-extern int x;
+#include <random>
+#include <string>
+#include <windows.h>
 using namespace std;
 int main()
 {
-	printa(10);
+	random_device rd;
+	mt19937 rng(rd());
+	uniform_int_distribution<int> uni(0, 15);
+	string init = "0123456789ABCDEF";
+	// while (true)
+	// {
+	// for (int i = 0; i < 16; i++)
+	// for (int j = 0; j < 16; j++)
+	// {
+	const char *k = "hello world";
+	string s = k;
+	char *haha = &s[0];
+	// Sleep(200);
+	// }
+	// }
 }
