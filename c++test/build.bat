@@ -1,5 +1,5 @@
 @echo off
-
+cd \c++test
 rem Set the compiler and compiler flags
 set CXX=g++
 set CXXFLAGS=-std=c++17
@@ -7,12 +7,14 @@ set CXXFLAGS=-std=c++17
 rem Compile all .cpp files into .o files
 for %%i in (*.cpp) do (
     %CXX% %CXXFLAGS% -c "%%i" -o "%%~ni.o"
+    echo "%%~ni.o"
 )
 setlocal enabledelayedexpansion
 rem Link all .o files into a single executable
 set "OBJECTS="
 for %%i in (*.o) do (
     set OBJECTS=!OBJECTS! "%%i"
+    echo %OBJECTS%
 )
 %CXX% %CXXFLAGS% %OBJECTS% -o program
 

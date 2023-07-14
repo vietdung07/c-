@@ -1,27 +1,30 @@
 // CPP program to illustrate *char
 #include <iostream>
 #include <string>
+#include <cstdint>
 using namespace std;
-class haha
+class test
 {
 private:
-	int a;
-
 public:
-	void print()
+	test() : data(0){};
+	test(const test &other)
 	{
-		a = 10;
-		cout << a;
+		data = other.data - other.data;
+		cout << "\ncall copy constructor";
 	}
-	void hello()
-	{
-		cout << &print;
-	}
+	int data;
 };
-#include <iostream>
-#include <string>
+test haha()
+{
+	test k;
+	k.data = 100;
+	return k;
+}
 int main(int argc, char **argv)
 {
-	cout << "hello";
+	long long a = 1;
+	constexpr int k = 100;
+	cout << -static_cast<long long>((1ull + ~1ull) / 2) - 1;
 	return 0;
 }
