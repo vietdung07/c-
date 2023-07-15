@@ -1,8 +1,10 @@
 // CPP program to illustrate *char
 #include <iostream>
 #include <string>
-#include <cstdint>
+// #include <cstdint>
 using namespace std;
+#define INT_MAXX static_cast<int>((1u + ~1u) / 2)
+#define INT_MINN -INT_MAXX - 1
 class test
 {
 private:
@@ -23,8 +25,10 @@ test haha()
 }
 int main(int argc, char **argv)
 {
-	long long a = 1;
-	constexpr int k = 100;
-	cout << -static_cast<long long>((1ull + ~1ull) / 2) - 1;
-	return 0;
+	int a = INT_MAXX;
+	int b = INT_MINN;
+	cout << a << ' ' << b;
+	// static_cast<int>(1l);
+	(~1);
+	return 0x0;
 }
