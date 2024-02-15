@@ -1,6 +1,7 @@
 // CPP program to illustrate *char
 #include <iostream>
 #include <string>
+#include <cstdio>
 // #include <cstdint>
 using namespace std;
 #define INT_MAXX static_cast<int>((1u + ~1u) / 2)
@@ -25,10 +26,8 @@ test haha()
 }
 int main(int argc, char **argv)
 {
-	int a = INT_MAXX;
-	int b = INT_MINN;
-	cout << a << ' ' << b;
-	// static_cast<int>(1l);
-	(~1);
-	return 0x0;
+	float a;
+	scanf("%d", &a);
+	printf("%d\n", a);
+	return 07777;
 }
