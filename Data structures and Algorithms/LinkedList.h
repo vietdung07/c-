@@ -9,6 +9,10 @@ NODE<T>::NODE(T _data) : data(_data), pre(nullptr), nxt(nullptr) {}
 
 template <typename T>
 NODE<T>::NODE(const NODE &other) = default;
+
+template <typename T>
+NODE<T>::NODE(NODE &&other) = default;
+
 template <typename T1>
 LinkedList<T1>::LinkedList() : head(nullptr), tail(nullptr), size(0) {}
 
@@ -72,7 +76,7 @@ void LinkedList<T1>::insert(T1 _data, int index)
 {
     try
     {
-        if (index < 0 && index > size)
+        if (index < 0 || index > size)
             throw std::out_of_range("Invalid index");
         NODE<T1> *newNODE = new NODE<T1>(_data);
         if (index == 0 && head == nullptr)
@@ -85,20 +89,17 @@ void LinkedList<T1>::insert(T1 _data, int index)
         {
             if (index >= 0 && index <= size)
             {
-                if (index == 0 || index == size)
+                if (index == 0)
                 {
-                    if (index == 0)
-                    {
-                        newNODE->nxt = head;
-                        head->pre = newNODE;
-                        head = newNODE;
-                    }
-                    else if (index == size)
-                    {
-                        newNODE->pre = tail;
-                        tail->nxt = newNODE;
-                        tail = newNODE;
-                    }
+                    newNODE->nxt = head;
+                    head->pre = newNODE;
+                    head = newNODE;
+                }
+                else if (index == size)
+                {
+                    newNODE->pre = tail;
+                    tail->nxt = newNODE;
+                    tail = newNODE;
                 }
                 else
                 {
@@ -129,7 +130,7 @@ void LinkedList<T1>::remove(int index)
 {
     try
     {
-        if (index < 0 && index >= size)
+        if (index < 0 || index >= size)
             throw std::out_of_range("Invalid index");
         if (index == 0)
         {
@@ -185,10 +186,52 @@ void LinkedList<T1>::clearAll()
 }
 
 template <typename T1>
+void LinkedList<T1>::reverse()
+{
+    NODE<T1> *pre_h = nullptr;
+    NODE<T1> *pre_t = nullptr;
+    NODE<T1> *nxt_h = this->head;
+    NODE<T1> *nxt_t = this->tail;
+    while (nxt_h != nullptr)
+    {
+        NODE<T1> *temp_h = nxt_h;
+        NODE<T1> *temp_t = nxt_t;
+        nxt_h = nxt_h->nxt;
+        nxt_t = nxt_t->pre;
+        temp_h->nxt = pre_h;
+        temp_t->pre = pre_t;
+        pre_h = temp_h;
+        pre_t = temp_t;
+    }
+    NODE<T1> *temp = this->head;
+    this->head = this->tail;
+    this->tail = temp;
+}
+
+template <typename T1>
+void LinkedList<T1>::sort() const
+{
+    for (LinkedList<T1>::iterator i = this->begin(); i != this->end(); ++i)
+    {
+        LinkedList<T1>::iterator temp = i;
+        ++temp;
+        LinkedList<T1>::iterator min = i;
+        for (LinkedList<T1>::iterator u = temp; u != this->end(); ++u)
+        {
+            if ((*min) > (*u))
+                min = u;
+        }
+        T1 temp1 = *i;
+        *i = *min;
+        *min = temp1;
+    }
+}
+
+template <typename T1>
 bool LinkedList<T1>::isEmpty() { return size == 0; }
 
 template <typename T1>
-const int &LinkedList<T1>::get_size() const { return size; }
+const int LinkedList<T1>::get_size() const { return size; }
 
 template <typename T1>
 T1 &LinkedList<T1>::operator[](int index) const

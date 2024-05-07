@@ -15,6 +15,7 @@ public:
     NODE();
     NODE(T _data);
     NODE(const NODE &other);
+    NODE(NODE &&other);
     friend class LinkedList<T>;
 };
 
@@ -51,8 +52,10 @@ public:
     void insert(T1 _data, int index = 0);
     void remove(int index = 0);
     void clearAll();
+    void sort() const;
+    void reverse();
     bool isEmpty();
-    const int &get_size() const;
+    const int get_size() const;
     T1 &operator[](int index) const;
     LinkedList<T1> operator+(const LinkedList<T1> other);
     LinkedList<T1> operator+(const NODE<T1> &other);

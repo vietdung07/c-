@@ -112,11 +112,11 @@ namespace sorting
     {
         for (int i = 0; i < size; i++)
         {
-            int max = i;
+            int min = i;
             for (int j = i + 1; j < size; j++)
-                if (arr[i] > arr[j])
-                    max = j;
-            arr[i] = arr[max];
+                if (arr[j] < arr[min])
+                    min = j;
+            swap(arr[i], arr[min]);
         }
     }
     void Insertion_sort(int arr[], int size)
@@ -151,7 +151,7 @@ void printArr(int arr[], int size)
 int main()
 {
     int a[13] = {88, 18, 100, 92, 98, 49, 30, 72, 93, 94, 97, 12, 49};
-    sorting::Selection_sort(a, 13);
+    sorting::Insertion_sort(a, 13);
     printArr(a, 13);
     return 0;
 }
