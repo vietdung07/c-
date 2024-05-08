@@ -58,11 +58,11 @@ public:
     bool isEmpty();
     const int get_size() const;
     T1 &operator[](int index) const;
-    LinkedList<T1> operator+(const LinkedList<T1> other);
-    LinkedList<T1> operator+(const NODE<T1> &other);
+    LinkedList<T1> operator+(const LinkedList<T1> &other) const;
+    LinkedList<T1> operator+(const NODE<T1> &other) const;
     LinkedList<T1> &operator=(const LinkedList<T1> &other);
     LinkedList<T1> &operator=(LinkedList<T1> &&other) noexcept;
-    LinkedList<T1> &operator+=(LinkedList<T1> other);
+    LinkedList<T1> &operator+=(const LinkedList<T1> &other);
     LinkedList<T1> &operator+=(const NODE<T1> &other);
     ~LinkedList();
 };
@@ -340,8 +340,10 @@ T1 &LinkedList<T1>::operator[](int index) const
 }
 
 template <typename T1>
-LinkedList<T1> LinkedList<T1>::operator+(const LinkedList<T1> other)
+LinkedList<T1> LinkedList<T1>::operator+(const LinkedList<T1> &other) const
 {
+    if (this->head == nullptr)
+        return other;
     LinkedList<T1> newone;
     this->tail->nxt = other.head;
     NODE<T1> *temp = this->head;
@@ -355,7 +357,7 @@ LinkedList<T1> LinkedList<T1>::operator+(const LinkedList<T1> other)
 }
 
 template <typename T1>
-LinkedList<T1> LinkedList<T1>::operator+(const NODE<T1> &other)
+LinkedList<T1> LinkedList<T1>::operator+(const NODE<T1> &other) const
 {
     LinkedList<T1> newone;
     newone = *this;
@@ -404,7 +406,7 @@ LinkedList<T1> &LinkedList<T1>::operator=(LinkedList<T1> &&other) noexcept
 }
 
 template <typename T1>
-LinkedList<T1> &LinkedList<T1>::operator+=(LinkedList<T1> other)
+LinkedList<T1> &LinkedList<T1>::operator+=(const LinkedList<T1> &other)
 {
     *this = *this + other;
     return *this;
@@ -443,6 +445,11 @@ int main()
     LinkedList<int> list2;
     list2 = std::move(list);
     for (int &i : list2)
+        cout << i << ' ';
+    cout << '\n';
+    // list.push_back(1);
+    list += LinkedList<int>{35, 3, 5, 32, 5, 34, 534, 5};
+    for (int &i : list)
         cout << i << ' ';
     cout << '\n'
          << list.isEmpty();
