@@ -26,6 +26,20 @@ private:
     NODE<T1> *head;
     NODE<T1> *tail;
     int size;
+    class base_iterator;
+    class base_iterator
+    {
+    protected:
+        NODE<T1> *k;
+
+    public:
+        base_iterator();
+        base_iterator(NODE<T1> *node);
+        base_iterator(const base_iterator &k);
+        T1 &operator*();
+        virtual base_iterator &operator++() = 0;
+        bool operator!=(const base_iterator &other);
+    };
 
 public:
     LinkedList();
@@ -33,27 +47,35 @@ public:
     LinkedList(LinkedList<T1> &&other) noexcept;
     LinkedList(std::initializer_list<T1> args);
     class iterator;
-    class iterator
+    class iterator : public base_iterator
     {
-    private:
-        NODE<T1> *k;
-
     public:
-        iterator();
-        iterator(NODE<T1> *node);
-        iterator(const iterator &k);
-        T1 &operator*();
-        iterator &operator++();
+        iterator() {}
+        iterator(NODE<T1> *node) : base_iterator(node) {}
+        iterator(const iterator &other) = default;
+        iterator &operator++() override;
         bool operator!=(const iterator &other);
+    };
+    class r_iterator;
+    class r_iterator : public base_iterator
+    {
+    public:
+        r_iterator() {}
+        r_iterator(NODE<T1> *node) : base_iterator(node) {}
+        r_iterator(const r_iterator &other) = default;
+        r_iterator &operator++() override;
+        bool operator!=(const r_iterator &other);
     };
     iterator begin() const;
     iterator end() const;
+    r_iterator r_begin() const;
+    r_iterator r_end() const;
     void push_back(T1 data);
     void pop_back();
     void insert(T1 _data, int index = 0);
     void remove(int index = 0);
     void clearAll();
-    void sort() const;
+    void sort();
     void reverse();
     bool isEmpty();
     const int get_size() const;
@@ -109,28 +131,41 @@ LinkedList<T1>::LinkedList(std::initializer_list<T1> args) : head(nullptr), tail
 }
 
 template <class T1>
-LinkedList<T1>::iterator::iterator() : k(nullptr) {}
+LinkedList<T1>::base_iterator::base_iterator() : k(nullptr) {}
 
 template <class T1>
-LinkedList<T1>::iterator::iterator(NODE<T1> *node) : k(node) {}
+LinkedList<T1>::base_iterator::base_iterator(NODE<T1> *node) : k(node) {}
 
 template <class T1>
-LinkedList<T1>::iterator::iterator(const iterator &k) = default;
+LinkedList<T1>::base_iterator::base_iterator(const base_iterator &k) = default;
 
 template <class T1>
-T1 &LinkedList<T1>::iterator::operator*() { return k->data; }
-
-template <class T1>
-typename LinkedList<T1>::iterator &LinkedList<T1>::iterator::operator++()
-{
-    k = k->nxt;
-    return *this;
-}
+T1 &LinkedList<T1>::base_iterator::operator*() { return k->data; }
 
 template <typename T1>
 bool LinkedList<T1>::iterator::operator!=(const iterator &other)
 {
-    return k != other.k;
+    return base_iterator::k != other.k;
+}
+
+template <typename T1>
+bool LinkedList<T1>::r_iterator::operator!=(const r_iterator &other)
+{
+    return base_iterator::k != other.k;
+}
+
+template <typename T1>
+typename LinkedList<T1>::iterator &LinkedList<T1>::iterator::operator++()
+{
+    base_iterator::k = base_iterator::k->nxt;
+    return *this;
+}
+
+template <typename T1>
+typename LinkedList<T1>::r_iterator &LinkedList<T1>::r_iterator::operator++()
+{
+    base_iterator::k = base_iterator::k->pre;
+    return *this;
 }
 
 template <typename T1>
@@ -138,6 +173,12 @@ typename LinkedList<T1>::iterator LinkedList<T1>::begin() const { return iterato
 
 template <typename T1>
 typename LinkedList<T1>::iterator LinkedList<T1>::end() const { return iterator(); }
+
+template <typename T1>
+typename LinkedList<T1>::r_iterator LinkedList<T1>::r_begin() const { return r_iterator(tail); }
+
+template <typename T1>
+typename LinkedList<T1>::r_iterator LinkedList<T1>::r_end() const { return r_iterator(); }
 
 template <typename T1>
 void LinkedList<T1>::push_back(T1 data) { insert(data, size); }
@@ -282,22 +323,69 @@ void LinkedList<T1>::reverse()
     this->tail = temp;
 }
 
+// template <typename T1>
+// void LinkedList<T1>::sort() const
+// {
+//     for (LinkedList<T1>::base_iterator i = this->begin(); i != this->end(); ++i)
+//     {
+//         LinkedList<T1>::base_iterator temp = i;
+//         ++temp;
+//         LinkedList<T1>::base_iterator min = i;
+//         for (LinkedList<T1>::base_iterator u = temp; u != this->end(); ++u)
+//         {
+//             if ((*min) > (*u))
+//                 min = u;
+//         }
+//         T1 temp1 = *i;
+//         *i = *min;
+//         *min = temp1;
+//     }
+// }
+
 template <typename T1>
-void LinkedList<T1>::sort() const
+void LinkedList<T1>::sort()
 {
-    for (LinkedList<T1>::iterator i = this->begin(); i != this->end(); ++i)
+    for (NODE<T1> *i = this->head; i != nullptr; i = i->nxt)
     {
-        LinkedList<T1>::iterator temp = i;
-        ++temp;
-        LinkedList<T1>::iterator min = i;
-        for (LinkedList<T1>::iterator u = temp; u != this->end(); ++u)
+        NODE<T1> *t = this->head;
+        for (; t != i; t = t->nxt)
+            if (t->data > i->data)
+                break;
+        if (t != i)
         {
-            if ((*min) > (*u))
-                min = u;
+            NODE<T1> *temp = i;
+            // isolate
+            NODE<T1> *pre_i_temp = temp->pre;
+            NODE<T1> *nxt_i_temp = temp->nxt;
+            if (i == this->tail)
+            {
+                pre_i_temp->nxt = nullptr;
+                this->tail = pre_i_temp;
+                i = pre_i_temp;
+            }
+            else
+            {
+                pre_i_temp->nxt = nxt_i_temp;
+                nxt_i_temp->pre = pre_i_temp;
+                i = pre_i_temp;
+            }
+            // insert
+            if (t == this->head)
+            {
+                temp->nxt = t;
+                t->pre = temp;
+                this->head = temp;
+                temp->pre = nullptr;
+            }
+            else
+            {
+                NODE<T1> *pre_t_temp = t->pre;
+                pre_t_temp->nxt = temp;
+                temp->pre = pre_t_temp;
+                temp->nxt = t;
+                t->pre = temp;
+            }
         }
-        T1 temp1 = *i;
-        *i = *min;
-        *min = temp1;
     }
 }
 
@@ -433,25 +521,20 @@ LinkedList<T1>::~LinkedList()
     head = nullptr;
     tail = nullptr;
 }
-
-LinkedList<int> haha()
-{
-    LinkedList<int> h = {1, 2, 21, 12, 32, 13, 21, 3, 2, 31};
-    return h;
-}
+#include <cstdio>
 int main()
 {
-    LinkedList<int> list(haha());
-    LinkedList<int> list2;
-    list2 = std::move(list);
-    for (int &i : list2)
+    LinkedList<int> list = {7023, 3090, 2329, 7336, 8956, 340, 9821, 6207, 50, 8324, 4848, 4463, 3829, 418, 9069, 9445, 928, 6271, 4938, 5657, 7786, 3977, 8712, 8736, 1796, 4881, 8926};
+    for (auto i : list)
         cout << i << ' ';
-    cout << '\n';
-    // list.push_back(1);
-    list += LinkedList<int>{35, 3, 5, 32, 5, 34, 534, 5};
-    for (int &i : list)
+    cout << endl;
+    list.sort();
+    list.reverse();
+    for (auto i : list)
         cout << i << ' ';
-    cout << '\n'
-         << list.isEmpty();
+    cout << endl;
+    for (auto i = list.r_begin(); i != list.r_end(); ++i)
+        cout << *i << ' ';
+    // 85,50,51,54,25,48,4,88,95,64,57,98
     return 0;
 }

@@ -1,29 +1,15 @@
 #include <iostream>
 #include <stack>
 using namespace std;
-struct para
+class para
 {
+public:
 	int n;
 	char sat[3];
+	para(int a, char b){};
 };
-// void tower(int n, char source, char aux, char target)
-// {
-// 	stack<para> callBack;
-// 	callBack.push({n, {source, aux, target}});
-// 	while (!callBack.empty())
-// 	{
-
-// 		if (callBack.top().n >= 2)
-// 		{
-// 			para tamp = callBack.top();
-// 			callBack.push({tamp.n, {tamp.sat[1], tamp.sat[0], tamp.sat[2]}});
-// 		}
-
-// 	}
-// }
-
 int main()
 {
-	
+	para haha{1, 'a'};
 	return 0;
 }

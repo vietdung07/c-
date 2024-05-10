@@ -30,6 +30,7 @@ private:
 public:
     LinkedList();
     LinkedList(const LinkedList<T1> &other);
+    LinkedList(LinkedList<T1> &&other) noexcept;
     LinkedList(std::initializer_list<T1> args);
     class iterator;
     class iterator
@@ -52,16 +53,17 @@ public:
     void insert(T1 _data, int index = 0);
     void remove(int index = 0);
     void clearAll();
-    void sort() const;
+    void sort();
     void reverse();
     bool isEmpty();
     const int get_size() const;
     T1 &operator[](int index) const;
-    LinkedList<T1> operator+(const LinkedList<T1> other);
-    LinkedList<T1> operator+(const NODE<T1> &other);
-    LinkedList<T1> &operator=(LinkedList<T1> other);
-    LinkedList<T1> &operator+=(LinkedList<T1> other);
-    LinkedList<T1> &operator+=(NODE<T1> &other);
+    LinkedList<T1> operator+(const LinkedList<T1> &other) const;
+    LinkedList<T1> operator+(const NODE<T1> &other) const;
+    LinkedList<T1> &operator=(const LinkedList<T1> &other);
+    LinkedList<T1> &operator=(LinkedList<T1> &&other) noexcept;
+    LinkedList<T1> &operator+=(const LinkedList<T1> &other);
+    LinkedList<T1> &operator+=(const NODE<T1> &other);
     ~LinkedList();
 };
 #endif
