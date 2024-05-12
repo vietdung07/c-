@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 using namespace std;
 template <typename T1>
 class LinkedList;
@@ -112,6 +113,7 @@ LinkedList<T1>::LinkedList(const LinkedList<T1> &other) : head(nullptr), tail(nu
         insert(temp->data, size);
         temp = temp->nxt;
     }
+    // cout << "copied" << endl;
 }
 
 template <typename T1>
@@ -323,25 +325,6 @@ void LinkedList<T1>::reverse()
     this->tail = temp;
 }
 
-// template <typename T1>
-// void LinkedList<T1>::sort() const
-// {
-//     for (LinkedList<T1>::base_iterator i = this->begin(); i != this->end(); ++i)
-//     {
-//         LinkedList<T1>::base_iterator temp = i;
-//         ++temp;
-//         LinkedList<T1>::base_iterator min = i;
-//         for (LinkedList<T1>::base_iterator u = temp; u != this->end(); ++u)
-//         {
-//             if ((*min) > (*u))
-//                 min = u;
-//         }
-//         T1 temp1 = *i;
-//         *i = *min;
-//         *min = temp1;
-//     }
-// }
-
 template <typename T1>
 void LinkedList<T1>::sort()
 {
@@ -430,14 +413,25 @@ T1 &LinkedList<T1>::operator[](int index) const
 template <typename T1>
 LinkedList<T1> LinkedList<T1>::operator+(const LinkedList<T1> &other) const
 {
-    if (this->head == nullptr)
-        return other;
     LinkedList<T1> newone;
+    if (this->head == other.head)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            NODE<T1> *temp = this->head;
+            while (temp != nullptr)
+            {
+                newone.push_back(temp->data);
+                temp = temp->nxt;
+            }
+        }
+        return newone;
+    }
     this->tail->nxt = other.head;
     NODE<T1> *temp = this->head;
     while (temp != nullptr)
     {
-        newone.insert(temp->data, newone.size);
+        newone.push_back(temp->data);
         temp = temp->nxt;
     }
     this->tail->nxt = nullptr;
@@ -449,27 +443,20 @@ LinkedList<T1> LinkedList<T1>::operator+(const NODE<T1> &other) const
 {
     LinkedList<T1> newone;
     newone = *this;
-    newone.insert(other.data, newone.size);
+    newone.push_back(other.data);
     return newone;
 }
 
 template <typename T1>
 LinkedList<T1> &LinkedList<T1>::operator=(const LinkedList<T1> &other)
 {
-    NODE<T1> *cur = head;
-    while (cur != nullptr)
-    {
-        NODE<T1> *temp = cur;
-        cur = cur->nxt;
-        delete temp;
-    }
-    head = nullptr;
-    tail = nullptr;
-    size = 0;
+    if (this == &other)
+        return *this;
+    clearAll();
     NODE<T1> *temp = other.head;
     while (temp != nullptr)
     {
-        insert(temp->data, size);
+        push_back(temp->data);
         temp = temp->nxt;
     }
     return *this;
@@ -521,20 +508,106 @@ LinkedList<T1>::~LinkedList()
     head = nullptr;
     tail = nullptr;
 }
-#include <cstdio>
 int main()
 {
-    LinkedList<int> list = {7023, 3090, 2329, 7336, 8956, 340, 9821, 6207, 50, 8324, 4848, 4463, 3829, 418, 9069, 9445, 928, 6271, 4938, 5657, 7786, 3977, 8712, 8736, 1796, 4881, 8926};
-    for (auto i : list)
-        cout << i << ' ';
-    cout << endl;
-    list.sort();
-    list.reverse();
-    for (auto i : list)
-        cout << i << ' ';
-    cout << endl;
-    for (auto i = list.r_begin(); i != list.r_end(); ++i)
-        cout << *i << ' ';
-    // 85,50,51,54,25,48,4,88,95,64,57,98
+
+    // Test 1: Basic operations (insertion, deletion, size)
+    LinkedList<int> list1;
+    assert(list1.isEmpty());
+    assert(list1.get_size() == 0);
+
+    list1.push_back(10);
+    list1.push_back(20);
+    list1.push_back(30);
+    assert(list1.get_size() == 3);
+    assert(list1[0] == 10);
+    assert(list1[1] == 20);
+    assert(list1[2] == 30);
+
+    list1.pop_back();
+    assert(list1.get_size() == 2);
+    assert(list1[1] == 20);
+
+    list1.remove(0);
+    assert(list1.get_size() == 1);
+    assert(list1[0] == 20);
+
+    // Test 2: Insertion at different positions
+    list1.insert(5, 0);
+    assert(list1[0] == 5);
+    assert(list1[1] == 20);
+
+    list1.insert(15, 1);
+    assert(list1[0] == 5);
+    assert(list1[1] == 15);
+    assert(list1[2] == 20);
+
+    // Test 3: Iterators and range-based for loop
+    LinkedList<int> list2 = {1, 2, 3, 4, 5};
+    int expectedValue = 1;
+    for (int &val : list2)
+    {
+        assert(val == expectedValue);
+        expectedValue++;
+    }
+
+    // Test 4: Reverse and Sort
+    list2.reverse();
+    expectedValue = 5;
+    for (int &val : list2)
+    {
+        assert(val == expectedValue);
+        expectedValue--;
+    }
+
+    list2.sort();
+    expectedValue = 1;
+    for (int &val : list2)
+    {
+        assert(val == expectedValue);
+        expectedValue++;
+    }
+
+    // Test 5: Copy constructor, assignment operator, move constructor
+    LinkedList<int> list3(list2); // Copy constructor
+    assert(list3.get_size() == list2.get_size());
+    for (int i = 0; i < list3.get_size(); ++i)
+    {
+        assert(list3[i] == list2[i]);
+    }
+
+    LinkedList<int> list4;
+    list4 = list3; // Assignment operator
+    assert(list4.get_size() == list3.get_size());
+    for (int i = 0; i < list4.get_size(); ++i)
+    {
+        assert(list4[i] == list3[i]);
+    }
+
+    LinkedList<int> list5(std::move(list4)); // Move constructor
+    assert(list5.get_size() == list3.get_size());
+    assert(list4.isEmpty()); // list4 should be empty after move
+
+    // Test 6: Operator+ and Operator+=
+    LinkedList<int> list6 = {1, 2, 3};
+    LinkedList<int> list7 = {4, 5, 6};
+    LinkedList<int> list8 = list6 + list7;
+
+    expectedValue = 1;
+    for (int &val : list8)
+    {
+        assert(val == expectedValue);
+        expectedValue++;
+    }
+
+    list6 += list7; // list6 = list6 + list7
+    expectedValue = 1;
+    for (int &val : list6)
+    {
+        assert(val == expectedValue);
+        expectedValue++;
+    }
+
+    cout << "All tests passed!" << endl;
     return 0;
 }
