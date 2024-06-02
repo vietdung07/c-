@@ -254,6 +254,8 @@ void LinkedList<T1>::remove(int index)
             NODE<T1> *temp = head;
             head = head->nxt;
             head->pre = nullptr;
+            temp->nxt = nullptr;
+            temp->pre = nullptr;
             delete temp;
             size--;
         }
@@ -262,6 +264,8 @@ void LinkedList<T1>::remove(int index)
             NODE<T1> *temp = tail;
             tail = tail->pre;
             tail->nxt = nullptr;
+            temp->nxt = nullptr;
+            temp->pre = nullptr;
             delete temp;
             size--;
         }
@@ -276,6 +280,8 @@ void LinkedList<T1>::remove(int index)
             NODE<T1> *after = temp->nxt;
             before->nxt = after;
             after->pre = before;
+            temp->nxt = nullptr;
+            temp->pre = nullptr;
             delete temp;
             size--;
         }
