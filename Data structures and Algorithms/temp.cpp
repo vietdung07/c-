@@ -85,6 +85,7 @@ public:
     LinkedList<T1> operator+(const NODE<T1> &other) const;
     LinkedList<T1> &operator=(const LinkedList<T1> &other);
     LinkedList<T1> &operator=(LinkedList<T1> &&other) noexcept;
+    LinkedList<T1> &operator+=(LinkedList<T1> &&other);
     LinkedList<T1> &operator+=(const LinkedList<T1> &other);
     LinkedList<T1> &operator+=(const NODE<T1> &other);
     ~LinkedList();
@@ -186,7 +187,7 @@ template <typename T1>
 void LinkedList<T1>::push_back(T1 data) { insert(data, size); }
 
 template <typename T1>
-void LinkedList<T1>::pop_back() { remove(size - 1); }
+void LinkedList<T1>::pop_back() { remove(this->size - 1); }
 
 template <typename T1>
 void LinkedList<T1>::insert(T1 _data, int index)
@@ -249,7 +250,14 @@ void LinkedList<T1>::remove(int index)
     {
         if (index < 0 || index >= size)
             throw std::out_of_range("Invalid index");
-        if (index == 0)
+        if (this->head == this->tail && this->tail != nullptr && index == 0)
+        {
+            delete this->head;
+            this->head = nullptr;
+            this->tail = nullptr;
+            this->size = 0;
+        }
+        else if (index == 0)
         {
             NODE<T1> *temp = head;
             head = head->nxt;
@@ -262,8 +270,8 @@ void LinkedList<T1>::remove(int index)
         else if (index == size - 1)
         {
             NODE<T1> *temp = tail;
-            tail = tail->pre;
-            tail->nxt = nullptr;
+            this->tail = this->tail->pre;
+            this->tail->nxt = nullptr;
             temp->nxt = nullptr;
             temp->pre = nullptr;
             delete temp;
@@ -487,6 +495,31 @@ LinkedList<T1> &LinkedList<T1>::operator=(LinkedList<T1> &&other) noexcept
 }
 
 template <typename T1>
+LinkedList<T1> &LinkedList<T1>::operator+=(LinkedList<T1> &&other)
+{
+    if (other.head != nullptr)
+    {
+        if (this->head == nullptr)
+        {
+            this->head = other.head;
+            this->tail = other.tail;
+            this->size = other.size;
+        }
+        else
+        {
+            this->tail->nxt = other.head;
+            other.head->pre = this->tail;
+            this->tail = other.tail;
+            this->size += other.size;
+        }
+        other.head = nullptr;
+        other.tail = nullptr;
+        other.size = 0;
+    }
+    return *this;
+}
+
+template <typename T1>
 LinkedList<T1> &LinkedList<T1>::operator+=(const LinkedList<T1> &other)
 {
     *this = *this + other;
@@ -514,105 +547,237 @@ LinkedList<T1>::~LinkedList()
     head = nullptr;
     tail = nullptr;
 }
+
+void test_empty_linked_list()
+{
+    LinkedList<int> list;
+    assert(list.isEmpty());
+    assert(list.get_size() == 0);
+    assert(!(list.begin() != list.end()));
+    assert(!(list.r_begin() != list.r_end()));
+}
+
+void test_push_back()
+{
+    LinkedList<int> list;
+    list.push_back(1);
+    list.push_back(2);
+    list.push_back(3);
+
+    assert(!list.isEmpty());
+    assert(list.get_size() == 3);
+
+    // Check elements using iterators
+    auto it = list.begin();
+    assert(*it == 1);
+    ++it;
+    assert(*it == 2);
+    ++it;
+    assert(*it == 3);
+    ++it;
+    assert(!(it != list.end()));
+
+    // Check elements using operator[]
+    assert(list[0] == 1);
+    assert(list[1] == 2);
+    assert(list[2] == 3);
+}
+
+void test_pop_back()
+{
+    LinkedList<int> list = {1, 2, 3};
+    list.pop_back();
+    assert(list.get_size() == 2);
+    assert(list[0] == 1);
+    assert(list[1] == 2);
+
+    list.pop_back();
+    assert(list.get_size() == 1);
+    assert(list[0] == 1);
+
+    list.pop_back();
+    assert(list.get_size() == 0);
+    assert(list.isEmpty());
+}
+
+void test_insert()
+{
+    LinkedList<int> list = {1, 2, 4};
+
+    // Insert at the beginning
+    list.insert(3, 0);
+    assert(list.get_size() == 4);
+    assert(list[0] == 3);
+    assert(list[1] == 1);
+    assert(list[2] == 2);
+    assert(list[3] == 4);
+
+    // Insert in the middle
+    list.insert(5, 2);
+    assert(list.get_size() == 5);
+    assert(list[0] == 3);
+    assert(list[1] == 1);
+    assert(list[2] == 5);
+    assert(list[3] == 2);
+    assert(list[4] == 4);
+
+    // Insert at the end
+    list.insert(6, list.get_size());
+    assert(list.get_size() == 6);
+    assert(list[0] == 3);
+    assert(list[1] == 1);
+    assert(list[2] == 5);
+    assert(list[3] == 2);
+    assert(list[4] == 4);
+    assert(list[5] == 6);
+}
+
+void test_remove()
+{
+    LinkedList<int> list = {1, 2, 3, 4, 5};
+
+    // Remove from the beginning
+    list.remove(0);
+    assert(list.get_size() == 4);
+    assert(list[0] == 2);
+    assert(list[1] == 3);
+    assert(list[2] == 4);
+    assert(list[3] == 5);
+
+    // Remove from the middle
+    list.remove(2);
+    assert(list.get_size() == 3);
+    assert(list[0] == 2);
+    assert(list[1] == 3);
+    assert(list[2] == 5);
+
+    // Remove from the end
+    list.remove(2);
+    assert(list.get_size() == 2);
+    assert(list[0] == 2);
+    assert(list[1] == 3);
+}
+
+void test_clearAll()
+{
+    LinkedList<int> list = {1, 2, 3, 4, 5};
+    list.clearAll();
+    assert(list.isEmpty());
+    assert(list.get_size() == 0);
+}
+
+void test_reverse()
+{
+    LinkedList<int> list = {1, 2, 3, 4, 5};
+    list.reverse();
+    assert(list[0] == 5);
+    assert(list[1] == 4);
+    assert(list[2] == 3);
+    assert(list[3] == 2);
+    assert(list[4] == 1);
+}
+
+void test_sort()
+{
+    LinkedList<int> list = {5, 2, 4, 1, 3};
+    list.sort();
+    assert(list[0] == 1);
+    assert(list[1] == 2);
+    assert(list[2] == 3);
+    assert(list[3] == 4);
+    assert(list[4] == 5);
+}
+
+void test_operator_plus()
+{
+    LinkedList<int> list1 = {1, 2, 3};
+    LinkedList<int> list2 = {4, 5, 6};
+    LinkedList<int> list3 = list1 + list2;
+    assert(list3.get_size() == 6);
+    assert(list3[0] == 1);
+    assert(list3[1] == 2);
+    assert(list3[2] == 3);
+    assert(list3[3] == 4);
+    assert(list3[4] == 5);
+    assert(list3[5] == 6);
+
+    // Test adding a node
+    NODE<int> node(7);
+    LinkedList<int> list4 = list1 + node;
+    assert(list4.get_size() == 4);
+    assert(list4[0] == 1);
+    assert(list4[1] == 2);
+    assert(list4[2] == 3);
+    assert(list4[3] == 7);
+}
+
+void test_operator_assignment()
+{
+    LinkedList<int> list1 = {1, 2, 3};
+    LinkedList<int> list2 = {4, 5, 6};
+    LinkedList<int> list3 = list1;
+    assert(list3.get_size() == 3);
+    assert(list3[0] == 1);
+    assert(list3[1] == 2);
+    assert(list3[2] == 3);
+    list3 = list2;
+    assert(list3.get_size() == 3);
+    assert(list3[0] == 4);
+    assert(list3[1] == 5);
+    assert(list3[2] == 6);
+
+    // Test move assignment
+    LinkedList<int> list4 = {7, 8, 9};
+    list3 = std::move(list4);
+    assert(list4.get_size() == 0);
+    assert(list3.get_size() == 3);
+    assert(list3[0] == 7);
+    assert(list3[1] == 8);
+    assert(list3[2] == 9);
+}
+
+void test_operator_plus_equals()
+{
+    LinkedList<int> list1 = {1, 2, 3};
+    LinkedList<int> list2 = {4, 5, 6};
+    list1 += list2;
+    assert(list1.get_size() == 6);
+    assert(list1[0] == 1);
+    assert(list1[1] == 2);
+    assert(list1[2] == 3);
+    assert(list1[3] == 4);
+    assert(list1[4] == 5);
+    assert(list1[5] == 6);
+
+    // Test move assignment
+    LinkedList<int> list3 = {7, 8, 9};
+    list1 += std::move(list3);
+    assert(list3.get_size() == 0);
+    assert(list1.get_size() == 9);
+    assert(list1[6] == 7);
+    assert(list1[7] == 8);
+    assert(list1[8] == 9);
+
+    // Test adding a node
+    NODE<int> node(10);
+    list1 += node;
+    assert(list1.get_size() == 10);
+    assert(list1[9] == 10);
+}
+
 int main()
 {
-
-    // Test 1: Basic operations (insertion, deletion, size)
-    LinkedList<int> list1;
-    assert(list1.isEmpty());
-    assert(list1.get_size() == 0);
-
-    list1.push_back(10);
-    list1.push_back(20);
-    list1.push_back(30);
-    assert(list1.get_size() == 3);
-    assert(list1[0] == 10);
-    assert(list1[1] == 20);
-    assert(list1[2] == 30);
-
-    list1.pop_back();
-    assert(list1.get_size() == 2);
-    assert(list1[1] == 20);
-
-    list1.remove(0);
-    assert(list1.get_size() == 1);
-    assert(list1[0] == 20);
-
-    // Test 2: Insertion at different positions
-    list1.insert(5, 0);
-    assert(list1[0] == 5);
-    assert(list1[1] == 20);
-
-    list1.insert(15, 1);
-    assert(list1[0] == 5);
-    assert(list1[1] == 15);
-    assert(list1[2] == 20);
-
-    // Test 3: Iterators and range-based for loop
-    LinkedList<int> list2 = {1, 2, 3, 4, 5};
-    int expectedValue = 1;
-    for (int &val : list2)
-    {
-        assert(val == expectedValue);
-        expectedValue++;
-    }
-
-    // Test 4: Reverse and Sort
-    list2.reverse();
-    expectedValue = 5;
-    for (int &val : list2)
-    {
-        assert(val == expectedValue);
-        expectedValue--;
-    }
-
-    list2.sort();
-    expectedValue = 1;
-    for (int &val : list2)
-    {
-        assert(val == expectedValue);
-        expectedValue++;
-    }
-
-    // Test 5: Copy constructor, assignment operator, move constructor
-    LinkedList<int> list3(list2); // Copy constructor
-    assert(list3.get_size() == list2.get_size());
-    for (int i = 0; i < list3.get_size(); ++i)
-    {
-        assert(list3[i] == list2[i]);
-    }
-
-    LinkedList<int> list4;
-    list4 = list3; // Assignment operator
-    assert(list4.get_size() == list3.get_size());
-    for (int i = 0; i < list4.get_size(); ++i)
-    {
-        assert(list4[i] == list3[i]);
-    }
-
-    LinkedList<int> list5(std::move(list4)); // Move constructor
-    assert(list5.get_size() == list3.get_size());
-    assert(list4.isEmpty()); // list4 should be empty after move
-
-    // Test 6: Operator+ and Operator+=
-    LinkedList<int> list6 = {1, 2, 3};
-    LinkedList<int> list7 = {4, 5, 6};
-    LinkedList<int> list8 = list6 + list7;
-
-    expectedValue = 1;
-    for (int &val : list8)
-    {
-        assert(val == expectedValue);
-        expectedValue++;
-    }
-
-    list6 += list7; // list6 = list6 + list7
-    expectedValue = 1;
-    for (int &val : list6)
-    {
-        assert(val == expectedValue);
-        expectedValue++;
-    }
+    test_empty_linked_list();
+    test_push_back();
+    test_pop_back();
+    test_insert();
+    test_remove();
+    test_clearAll();
+    test_reverse();
+    test_sort();
+    test_operator_plus();
+    test_operator_assignment();
+    test_operator_plus_equals();
 
     cout << "All tests passed!" << endl;
     return 0;
