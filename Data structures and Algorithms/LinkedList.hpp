@@ -90,6 +90,7 @@ public:
     LinkedList<T1> &operator+=(const NODE<T1> &other);
     ~LinkedList();
 };
+
 template <typename T>
 NODE<T>::NODE() : pre(nullptr), nxt(nullptr) {}
 
@@ -495,6 +496,13 @@ LinkedList<T1> &LinkedList<T1>::operator=(LinkedList<T1> &&other) noexcept
 }
 
 template <typename T1>
+LinkedList<T1> &LinkedList<T1>::operator+=(const LinkedList<T1> &other)
+{
+    *this = *this + other;
+    return *this;
+}
+
+template <typename T1>
 LinkedList<T1> &LinkedList<T1>::operator+=(LinkedList<T1> &&other)
 {
     if (other.head != nullptr)
@@ -516,13 +524,6 @@ LinkedList<T1> &LinkedList<T1>::operator+=(LinkedList<T1> &&other)
         other.tail = nullptr;
         other.size = 0;
     }
-    return *this;
-}
-
-template <typename T1>
-LinkedList<T1> &LinkedList<T1>::operator+=(const LinkedList<T1> &other)
-{
-    *this = *this + other;
     return *this;
 }
 
@@ -795,4 +796,4 @@ int main()
     return 0;
 } */
 #endif // !LINKED_LIST_MY_OWN
-// int main() { return 0; }
+       // int main() { return 0; }
