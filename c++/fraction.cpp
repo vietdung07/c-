@@ -1,29 +1,31 @@
 #include <iostream>
 #include <iomanip>
 #include <exception>
+// #include <algorithm>
 #include <math.h>
 using namespace std;
-long gcd(long a, long b)
+long long gcd(long long a, long long b)
 {
 	a = abs(a);
 	b = abs(b);
 	if (a == 0 || b == 0)
 		return 0;
-	while (a != 0 && b != 0)
-		if (a > b)
-			a = a % b;
-		else
-			b = b % a;
-	return (a != 0) ? a : b;
+	while (b != 0)
+	{
+		long long temp = b;
+		b = a % b;
+		a = temp;
+	}
+	return a;
 }
-long lcm(long a, long b)
+long long lcm(long long a, long long b)
 {
 	a = abs(a);
 	b = abs(b);
 	if (a == 0 || b == 0)
 		return 0;
 	else
-		return a * b / gcd(a, b);
+		return a * (b / gcd(a, b));
 }
 class divided_by_zero : public std::exception
 {
@@ -37,9 +39,9 @@ class fraction
 {
 private:
 public:
-	long numerator;
-	long denominator;
-	fraction(long _numerator, long _denominator = 1) : numerator(_numerator), denominator(_denominator)
+	long long numerator;
+	long long denominator;
+	fraction(long long _numerator, long long _denominator = 1) : numerator(_numerator), denominator(_denominator)
 	{
 		try
 		{
@@ -49,6 +51,7 @@ public:
 		catch (divided_by_zero &k)
 		{
 			cout << k.what();
+			exit(1);
 		}
 	}
 	fraction() : numerator(0), denominator(1) {}
@@ -59,15 +62,17 @@ public:
 			k.denominator = 1;
 		else
 		{
-			int a = gcd(k.numerator, k.denominator);
-			short sign_num = k.numerator / abs(k.numerator);
-			short sign_den = k.denominator / abs(k.denominator);
+			long long a = gcd(k.numerator, k.denominator);
+			long long temp_numerator = abs(k.numerator);
+			long long temp_denominator = abs(k.denominator);
+			short sign_num = k.numerator / temp_numerator;
+			short sign_den = k.denominator / temp_denominator;
 			if (sign_num * sign_den == 1)
-				k.numerator = abs(k.numerator);
+				k.numerator = temp_numerator;
 			else if (sign_num * sign_den == -1)
-				k.numerator = -abs(k.numerator);
+				k.numerator = -temp_numerator;
 			k.numerator = k.numerator / a;
-			k.denominator = abs(k.denominator) / a;
+			k.denominator = temp_denominator / a;
 		}
 		return k;
 	}
@@ -75,10 +80,10 @@ public:
 	{
 		fraction this_one = this->Simlify();
 		other = other.Simlify();
-		long a = lcm(this_one.denominator, other.denominator);
-		long temp_numerator = this_one.numerator * (a / this_one.denominator) + other.numerator * (a / other.denominator);
-		long temp_denominator = a;
-		long k = gcd(temp_denominator, temp_numerator);
+		long long a = lcm(this_one.denominator, other.denominator);
+		long long temp_numerator = this_one.numerator * (a / this_one.denominator) + other.numerator * (a / other.denominator);
+		long long temp_denominator = a;
+		long long k = gcd(temp_denominator, temp_numerator);
 		temp_denominator = temp_denominator / k;
 		temp_numerator = temp_numerator / k;
 		return fraction(temp_numerator, temp_denominator);
@@ -87,15 +92,28 @@ public:
 	{
 		fraction this_one = this->Simlify();
 		other = other.Simlify();
-		long a = lcm(this_one.denominator, other.denominator);
-		long temp_numerator = this_one.numerator * (a / this_one.denominator) - other.numerator * (a / other.denominator);
-		long temp_denominator = a;
-		long k = gcd(temp_denominator, temp_numerator);
+		long long a = lcm(this_one.denominator, other.denominator);
+		long long temp_numerator = this_one.numerator * (a / this_one.denominator) - other.numerator * (a / other.denominator);
+		long long temp_denominator = a;
+		long long k = gcd(temp_denominator, temp_numerator);
 		temp_denominator = temp_denominator / k;
 		temp_numerator = temp_numerator / k;
 		return fraction(temp_numerator, temp_denominator);
 	}
+	fraction &operator+=(fraction other)
+	{
+		return (*this = *this + other);
+	}
+	fraction &operator-=(fraction other)
+	{
+		return (*this = *this - other);
+	}
+	operator double()
+	{
+		return double(this->numerator) / (this->denominator);
+	}
 };
+
 ostream &operator<<(ostream &os, const fraction &k)
 {
 	if (k.denominator != 1)
@@ -106,9 +124,6 @@ ostream &operator<<(ostream &os, const fraction &k)
 }
 int main()
 {
-	fraction a(100);
-	fraction b(-5, -6);
-	fraction k = a - b;
-	cout << b;
+	
 	return 0;
 }
