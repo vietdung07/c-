@@ -240,7 +240,7 @@ int main()
 
     LinkedList<int> temp = {83, 41, 53, 40, 56, 64, 45, 20, 44, 100, 26, 61, 84, 65};
     std::cout << temp.get_size() << std::endl;
-    temp.Mergesort();
+    temp.sort();
     for (auto &i : temp)
         std::cout << i << ' ';
     end = clock();

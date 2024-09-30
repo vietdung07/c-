@@ -1,11 +1,13 @@
+#if 1
 #include <iostream>
-#if 0
-bool bino_co_array[10];
-int Main_arr[6];
-bool sub_arr[6];
-int temp[6];
-int n = 6;
-int cur = 0;
+#define MAX 25
+#define RES 4
+bool bino_co_array[MAX];
+int Main_arr[RES];
+bool sub_arr[RES];
+int temp[MAX];
+int n = RES;
+int cur = 1;
 int count = 0;
 void check()
 {
@@ -46,17 +48,25 @@ void permute(int k)
 }
 void binomial_coefficient_gen(int k)
 {
-    if (n == k)
+    if (n == k - 1)
     {
-        permute(0);
+        int x = Main_arr[0];
+        int y = Main_arr[1];
+        int z = Main_arr[2];
+        int t = Main_arr[3];
+        if (/* x + t == y + z  ||*/ z + t == x + y + 24)
+        {
+            std::cout << x << ' ' << y << ' ' << z << ' ' << t << '\n';
+            count++;
+        }
     }
     else
     {
         int temp = cur;
-        for (int i = temp; i < 10; i++)
+        for (int i = temp; i < MAX; i++)
         {
             bino_co_array[i] = true;
-            Main_arr[k] = i;
+            Main_arr[k - 1] = i;
             cur = i + 1;
             binomial_coefficient_gen(k + 1);
             bino_co_array[i] = false;
@@ -66,11 +76,12 @@ void binomial_coefficient_gen(int k)
 int main()
 {
     freopen("main.out", "w", stdout);
-    binomial_coefficient_gen(0);
+    binomial_coefficient_gen(1);
     std::cout << count;
     return 0;
 }
 #endif
+#if 0
 #include <iostream>
 int main()
 {
@@ -97,3 +108,49 @@ int main()
     std::cout << count;
     return 0;
 }
+#endif
+#if 0
+#include <iostream>
+#include <utility>
+#include <vector>
+#include <map>
+#include <string>
+#define MAX 3
+bool bino_co_array[17];
+int res[MAX];
+int cur = 1;
+int count = 0;
+void binomial_coefficient_gen(int k)
+{
+    if (k == MAX)
+    {
+        int product = 1;
+        for (int &i : res)
+        {
+            product *= i;
+        }
+        if (product % 128 == 0)
+        {
+            for (int &i : res)
+            {
+                std::cout << i << ' ';
+            }
+            std::cout << '\n';
+            count++;
+        }
+    }
+    else
+    {
+        int temp = cur;
+        for (int i = temp; i <= 16; i++)
+        {
+            bino_co_array[i] = true;
+            res[k] = i;
+            cur = i + 1;
+            binomial_coefficient_gen(k + 1);
+            bino_co_array[i] = false;
+        }
+    }
+}
+
+#endif

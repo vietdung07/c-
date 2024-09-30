@@ -91,10 +91,6 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
-        "*.def": "cpp",
-        "cassert": "cpp",
-        "generator": "cpp",
-        "print": "cpp",
-        "text_encoding": "cpp"
+        "*.def": "cpp"
     }
 }
