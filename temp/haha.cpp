@@ -101,3 +101,63 @@ int main()
     return 0;
 }
 #endif
+
+#if 0
+#include <iostream>
+int c(int k, int n)
+{
+    static int a[15][15];
+    static bool flag = true;
+    if (flag)
+    {
+        flag = false;
+        for (int i = 1; i < 15; i++)
+        {
+            for (int j = 0; j <= i; j++)
+            {
+                if (j == 0 || j == i)
+                    a[0][i] = a[i][i] = 1;
+                else
+                    a[j][i] = a[j - 1][i - 1] + a[j][i - 1];
+            }
+        }
+    }
+    return a[k][n];
+}
+int main()
+{
+    int res = 0;
+    for (int x = 1; x <= 8; x++)
+    {
+        for (int y = 1; y < 10 - x; y++)
+        {
+            res += c(x, 10) * c(y, 10 - x);
+        }
+    }
+    std::cout << res;
+    return 0;
+}
+#endif
+
+#if 0
+#include <iostream>
+int main()
+{
+    freopen("main.out", "w", stdout);
+    for (int i = 1; i <= 10000; i++)
+    {
+        for (int j = i + 1; j <= 10000; j++)
+        {
+            for (int k = j + 1; k <= 10000; k++)
+            {
+                int left_side = i * i * i + j * j * j + k * k * k;
+                int right_side = 3 * i * i * j * j * k * k;
+                if (left_side == right_side)
+                    std::cout << i << ' ' << j << ' ' << k << '\n';
+            }
+        }
+    }
+
+    return 0;
+}
+#endif

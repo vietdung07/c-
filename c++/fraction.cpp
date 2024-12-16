@@ -124,6 +124,7 @@ ostream &operator<<(ostream &os, const fraction &k)
 }
 int main()
 {
-	
+	fraction k(52, 104);
+	std::cout << k.Simlify() << std::endl;
 	return 0;
 }
