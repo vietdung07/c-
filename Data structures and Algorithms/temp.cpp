@@ -92,7 +92,7 @@ template <typename T>
 NODE<T>::NODE() : pre(nullptr), nxt(nullptr) {}
 
 template <typename T>
-NODE<T>::NODE(T _data) : data(_data), pre(nullptr), nxt(nullptr) {}
+NODE<T>::NODE(T _data) : pre(nullptr), nxt(nullptr), data(_data) {}
 
 template <typename T>
 NODE<T>::NODE(const NODE &other) = default;
@@ -535,6 +535,5 @@ int main()
     cout << endl;
     for (auto i = list.r_begin(); i != list.r_end(); ++i)
         cout << *i << ' ';
-    // 85,50,51,54,25,48,4,88,95,64,57,98
     return 0;
 }

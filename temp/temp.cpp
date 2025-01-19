@@ -292,7 +292,7 @@ int main()
     return 0;
 }
 #endif
-#if 1
+#if 0
 #include <iostream>
 #include <cmath>
 inline int gcd(int a, int b)

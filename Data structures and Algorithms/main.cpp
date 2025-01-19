@@ -225,18 +225,18 @@ void test_operator_plus_equals()
 int main()
 {
     clock_t start = clock(), end;
-    // test_empty_linked_list();
-    // test_push_back();
-    // test_pop_back();
-    // test_insert();
-    // test_remove();
-    // test_clearAll();
-    // test_reverse();
-    // test_sort();
-    // test_operator_plus();
-    // test_operator_assignment();
-    // test_operator_plus_equals();
-    // cout << "All tests passed!" << endl;
+    test_empty_linked_list();
+    test_push_back();
+    test_pop_back();
+    test_insert();
+    test_remove();
+    test_clearAll();
+    test_reverse();
+    test_sort();
+    test_operator_plus();
+    test_operator_assignment();
+    test_operator_plus_equals();
+    cout << "All tests passed!" << endl;
 
     LinkedList<int> temp = {83, 41, 53, 40, 56, 64, 45, 20, 44, 100, 26, 61, 84, 65};
     std::cout << temp.get_size() << std::endl;

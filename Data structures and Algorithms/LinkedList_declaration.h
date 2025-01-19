@@ -54,6 +54,7 @@ public:
     void remove(int index = 0);
     void clearAll();
     void sort();
+    void Mergesort();
     void reverse();
     bool isEmpty();
     const int get_size() const;
