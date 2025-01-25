@@ -1,6 +1,6 @@
 #include <iostream>
 #include <map>
-#include <cmath>
+
 using namespace std;
 
 long long a[100][100];
@@ -304,16 +304,7 @@ string PTHH(string str)
     return st;
 }
 
-bool isPerfectSquare(int num)
-{
-    if (num < 0)
-        return false;
-    int root = static_cast<int>(sqrt(num));
-    return root * root == num;
-}
-
 int main()
-
 {
     do
     {
@@ -325,16 +316,7 @@ int main()
         cout << endl
              << endl
              << " ";
-        cout << "Enter a number to check if it is a perfect square: ";
-        int number;
-        cin >> number;
-        if (isPerfectSquare(number))
-        {
-            cout << number << " is a perfect square." << endl;
-        }
-        else
-        {
-            cout << number << " is not a perfect square." << endl;
-        }
         system("pause");
-    } while (false);
+    } while (true);
+    return 0;
+}

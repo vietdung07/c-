@@ -9,7 +9,7 @@ long long gcd(long long a, long long b)
 	a = abs(a);
 	b = abs(b);
 	if (a == 0 || b == 0)
-		return 0;
+		return 1;
 	while (b != 0)
 	{
 		long long temp = b;
@@ -124,7 +124,7 @@ ostream &operator<<(ostream &os, const fraction &k)
 }
 int main()
 {
-	fraction k(52, 104);
-	std::cout << k.Simlify() << std::endl;
+	fraction k(582, 1903);
+	std::cout << double(k) << std::endl;
 	return 0;
 }
